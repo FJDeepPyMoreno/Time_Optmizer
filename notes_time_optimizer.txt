@@ -1,0 +1,100 @@
+---------------------------------------
+08/06/2020
+---------------------------------------
+
+* Vamos a repasar aspectos de la generación de números aleatorios:
+
+RANDOM NUMBERS in Python (so far)
+----------------------------------------------------
+
+* Random numbers generated through a generation algorithm are called pseudo random.
+
+* Vamos a utilizar el módulo .random de numpy:
+
+import numpy as np
+
+* En el programa random_numbers_concepts.py en el proyecto "random_optimizer" en 'My_Python_Projects", repasamos aspectos básicos
+de la generación de números aleatorios que nos ofrece numpy. Uno de los métodos más importantes de numpy.random es RandomState:
+
+numpy.random.RandomState
+-----------------------------------------
+
+* Uno de los elementos claves del RandomState es el seed. De hecho, en numpy existe np.random.seed(...valor...). Todos los algoritmos
+de generación de pseudo-random numbers necesitan un seed. 
+
+# Comprobación de la inicialización de la semilla:
+
+for numero_tandas in range(0,5):
+    np.random.seed(1)
+    aleatorio = np.random.randint(0,10,6)
+    print("Tanda nº {0:d}: ".format(numero_tandas+1), aleatorio)
+    # Todas las tandas generadas tienen la misma secuencia.
+
+# Comprobación de la no inicialización de la semilla:
+
+for numero_tandas in range(0,5):
+    np.random.seed() # seed = None.
+    aleatorio = np.random.randint(0,10,6)
+    print("Tanda nº {0:d}: ".format(numero_tandas+1), aleatorio)
+
+
+En el caso de que seed = None, RandomState intenta leer datos de /dev/urandom y /dev/random. Estos don dos archivos especiales que 
+se encuentran en el sistema linux y que generan pseudo-random numbers a partir del ruido (enviromental noise) collected from device
+drivers and other sources. La calidad de la aleatoriedad de los números generados es muy buena. Por ejemplo:
+
+for numero_tandas in range(0,5):
+    np.random.seed()
+    aleatorio = np.random.randint(0,10,6)
+    aleatorio2 = np.random.randint(0,10,6)
+    print("Tanda nº {0:d}: ".format(numero_tandas+1), aleatorio)
+    print("                ", aleatorio2)  
+
+# Incluso observamos que las secuencias 'aleatorio' y 'aleatorio2' son diferentes. Esto se debe a que el generador sigue actuando:
+
+-----seed = None----- 
+
+Tanda nº 1:  [6 3 3 7 3 6]
+                 [0 8 4 0 8 9]
+Tanda nº 2:  [1 9 6 1 1 9]
+                 [9 2 2 9 7 1]
+Tanda nº 3:  [9 9 8 4 0 3]
+                 [0 1 6 5 4 6]
+Tanda nº 4:  [6 4 1 0 2 0]
+                 [1 3 8 4 4 5]
+Tanda nº 5:  [7 9 0 9 1 3]
+                 [5 2 6 9 0 4]
+
+* Podemos concluir que el generador es bastante bueno. 
+
+* Se puede incrementar la aleatoriedad del proceso mediante el uso de los métodos .random.shuffle(sequence) y .random.choice(...)
+
+No debemos olvidar que la secuencia de números aleatorios generada a partir de una semilla, es una secuencia determinista que en algún
+momento empieza a repetirse. Realizar cambios en la semilla puede mejorar la aleatoriedad de los números de la secuencia.
+
+Eso significa que a partir de una semilla dada, cualquier pseudo-random number generator generará secuencias idénticas al cabo de 
+cierto tiempo. 
+
+
+--> En el siguiente snippet se aprecia claramente el carácter determinista del generador y cómo el motor continua generando la
+secuencia en las sucesivas llamadas a np.random.... a no ser que se vuelva a reiniciar la semilla:
+
+print("\n-----seed = squence----- \n")
+np.random.seed(3)
+aleatorio = np.random.randint(0,10,6)
+aleatorio2 = np.random.randint(0,10,6)
+print(aleatorio)
+print(aleatorio2)
+#-----------------------------------------
+np.random.seed(3)
+aleatorio = np.random.randint(0,10,12)
+print(aleatorio)
+
+# Output:
+
+-----seed = squence----- 
+
+[8 9 3 8 8 0]
+[5 3 9 9 5 7]
+[8 9 3 8 8 0 5 3 9 9 5 7]
+
+
